@@ -3,7 +3,12 @@ package com.cmoreno.productservice;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.cmoreno.productservice.dto.ProductRequest;
 import com.cmoreno.productservice.dto.ProductResponse;
+import com.cmoreno.productservice.model.Product;
 import com.cmoreno.productservice.repository.ProductRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,8 +53,24 @@ class ProductServiceApplicationTests {
 		dinaDynamicPropertyRegistry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
 	}
 
+	@BeforeEach
+	void setUp() {
+		productRepository.save(Product.builder()
+				.name("Iphone 13")
+				.description("The Old IPhone")
+				.price(BigDecimal.valueOf(800))
+				.build());
+	}
+
+	@AfterEach
+	void tearDown() {
+		productRepository.deleteAll();
+	}
+
 	@Test
+	@Order(1)
 	void shouldCreateProduct() throws Exception {
+
 		ProductRequest productRequest = getProductRequest();
 		String productRequestString = objectMapper.writeValueAsString(productRequest);
 
@@ -61,24 +83,19 @@ class ProductServiceApplicationTests {
 	}
 
 	@Test
+	@Order(2)
 	void shouldGetProduct() throws Exception {
-		ProductRequest productRequest = getProductRequest();
-		String productRequestString = objectMapper.writeValueAsString(productRequest);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/product")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(productRequestString))
-				.andExpect(MockMvcResultMatchers.status().isCreated());
-
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/product"))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/product")
+				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn();
 
-		List<ProductResponse> responses = objectMapper.readValue(result.getResponse().getContentAsString(),
+		List<ProductResponse> actual = objectMapper.readValue(result.getResponse().getContentAsString(),
 				new TypeReference<List<ProductResponse>>() {
 				});
 
-		Assertions.assertEquals("The New IPhone", responses.get(0).getDescription());
+		Assertions.assertEquals("The Old IPhone", actual.get(0).getDescription());
 	}
 
 	private ProductRequest getProductRequest() {
