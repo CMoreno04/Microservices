@@ -2,7 +2,6 @@ package com.cmoreno.orderservice.model;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +27,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String orderNumber;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order")
     private List<OrderLineItems> orderLineItemList;
 }
