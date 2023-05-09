@@ -2,6 +2,7 @@ package com.cmoreno.orderservice.model;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="t_order_line_items")
+@Table(name = "t_order_line_items")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,6 +26,7 @@ public class OrderLineItems {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @Column(name = "sku_code")
     private String skuCode;
     private BigDecimal price;
     private Integer quantity;
