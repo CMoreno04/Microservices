@@ -3,8 +3,6 @@ package com.cmoreno.productservice;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
